@@ -1,7 +1,7 @@
 # TranslationHandler
 
-Allow convertion of translations from JSON to CSV and CSV to JSON.
-Convertion is required to show data in Google Sheet instead of a code editor.
+Allow conversion of translations from JSON to CSV and CSV to JSON.
+Conversion is required to show data in Google Sheet instead of a code editor.
 
 ## Installation
 
