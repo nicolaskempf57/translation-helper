@@ -1,0 +1,7 @@
+%{
+  "bunt": {:hex, :bunt, "0.2.0", "951c6e801e8b1d2cbe58ebbd3e616a869061ddadcc4863d0a2182541acae9a38", [:mix], [], "hexpm", "7af5c7e09fe1d40f76c8e4f9dd2be7cebd83909f31fee7cd0e9eadc567da8353"},
+  "credo": {:hex, :credo, "1.4.0", "92339d4cbadd1e88b5ee43d427b639b68a11071b6f73854e33638e30a0ea11f5", [:mix], [{:bunt, "~> 0.2.0", [hex: :bunt, repo: "hexpm", optional: false]}, {:jason, "~> 1.0", [hex: :jason, repo: "hexpm", optional: false]}], "hexpm", "1fd3b70dce216574ce3c18bdf510b57e7c4c85c2ec9cad4bff854abaf7e58658"},
+  "csv": {:hex, :csv, "2.3.1", "9ce11eff5a74a07baf3787b2b19dd798724d29a9c3a492a41df39f6af686da0e", [:mix], [{:parallel_stream, "~> 1.0.4", [hex: :parallel_stream, repo: "hexpm", optional: false]}], "hexpm", "86626e1c89a4ad9a96d0d9c638f9e88c2346b89b4ba1611988594ebe72b5d5ee"},
+  "jason": {:hex, :jason, "1.2.0", "10043418c42d2493d0ee212d3fddd25d7ffe484380afad769a0a38795938e448", [:mix], [{:decimal, "~> 1.0", [hex: :decimal, repo: "hexpm", optional: true]}], "hexpm", "116747dbe057794c3a3e4e143b7c8390b29f634e16c78a7f59ba75bfa6852e7f"},
+  "parallel_stream": {:hex, :parallel_stream, "1.0.6", "b967be2b23f0f6787fab7ed681b4c45a215a81481fb62b01a5b750fa8f30f76c", [:mix], [], "hexpm", "639b2e8749e11b87b9eb42f2ad325d161c170b39b288ac8d04c4f31f8f0823eb"},
+}
