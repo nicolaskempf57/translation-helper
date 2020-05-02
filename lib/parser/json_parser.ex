@@ -5,7 +5,7 @@ defmodule JsonParser do
   @behaviour Parser
 
   @impl Parser
-  @spec parse(String.t()) :: {:error, String.t()} | {:ok, term}
+  @spec parse(String.t) :: {:ok, map} | {:error, String.t}
   def parse(filename) when is_binary(filename) do
     case File.read(filename) do
       {:ok, file_content} -> parse_json(file_content)
@@ -21,8 +21,19 @@ defmodule JsonParser do
   end
 
   @impl Parser
-  @spec encode(any, binary) :: {:error, <<_::120>>}
-  def encode(_, filename) when is_binary(filename) do
-    {:error, "Not implemented"}
+  @spec encode(map, binary) :: {:ok, binary} | {:error, binary}
+  def encode(%{} = data, filename) when is_binary(filename) do
+    Path.rootname(filename, ".csv")
+    |> Kernel.<>(".json")
+    |> File.open([:utf8, :write])
+    |> case do
+      {:ok, file} -> data
+        |> Jason.encode([escape: :json, maps: :strict, pretty: true])
+        |> case do
+          {:ok, json} -> {IO.write(file, json), filename}
+          {:error, %Jason.EncodeError{message: message}} -> {:error, message}
+        end
+      {:error, reason} -> {:error, to_string(:file.format_error(reason))}
+    end
   end
 end

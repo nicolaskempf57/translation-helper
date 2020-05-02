@@ -2,7 +2,6 @@ defmodule TranslationHandler do
   @moduledoc """
   Module taking JSON string with translations and converting it to CSV
   """
-
   @spec main([binary]) :: [binary()] | {:error, binary}
   def main(args) do
     IO.puts "Parsing arguments"
@@ -13,49 +12,51 @@ defmodule TranslationHandler do
 
   @doc """
   Convert JSON string to Map and format it to CSV
-
-  ## Examples
-
-  First level value are converted to `Translation`
-
-      iex> TranslationHandler.convert(~S({"create": "Créer", "next": "Suivant"}))
-      {:ok, [%Translation{from: "Créer", key: "create", to: ""}, %Translation{from: "Suivant", key: "next", to: ""}]}
-
-  Others levels are flatten, the result key is prefixed with their top level key and converted to `Translation`
-
-      iex> TranslationHandler.convert(~S({"top": {"create": "Créer", "next": "Suivant"}}))
-      {:ok, [%Translation{from: "Créer", key: "top.create", to: ""}, %Translation{from: "Suivant", key: "top.next", to: ""}]}
-
-  You must provide a `String.t()` for the function otherwise it'll return an error.
-
-      iex> TranslationHandler.convert(22)
-      {:error, "JSON String is required"}
-
-  The parameter must be a JSON decodable String otherwise it'll return an error.
-
-      iex> TranslationHandler.convert("invalid")
-      {:error, %Jason.DecodeError{data: "invalid", position: 0, token: nil}}
-
   """
   @spec convert(String.t() | any()) :: [binary()] | {:error, String.t()}
   def convert(filename) when is_binary(filename) do
-    JsonParser.parse(Path.expand(filename))
-    |> extract
-    |> format
-    |> encode(filename)
-    |> print_result
+    case Path.extname(filename) do
+      ".json" -> parse_json(filename)
+      ".csv" -> parse_csv(filename)
+    end
   end
   def convert(_), do: {:error, "JSON String is required"}
 
-  defp print_result({:ok, _}), do: IO.puts("File parsed and translations extracted")
-  defp print_result({:error, reason}), do: IO.warn(reason)
+  defp print_result({:ok, _} = result) do
+    IO.puts("File parsed and translations extracted")
+    result
+  end
+  defp print_result({:error, reason} = result) do
+    IO.warn(reason)
+    result
+  end
+
+  defp parse_json(file) do
+    JsonParser.parse(file)
+    |> extract
+    |> format_for_csv
+    |> encode(file)
+    |> print_result
+  end
+
+  defp parse_csv(file) do
+    CsvParser.parse(file)
+    |> extract
+    |> format_for_json
+    |> encode(file)
+    |> print_result
+  end
 
   defp extract({:ok, map}), do: {:ok, Extractor.extract(map)}
   defp extract({:error, _} = error), do: error
 
-  defp encode({:ok, list}, filename), do: {:ok, CsvParser.encode(list, filename)}
+  defp encode({:ok, list}, filename) when is_list(list), do: {:ok, CsvParser.encode(list, filename)}
+  defp encode({:ok, %{} = map}, filename), do: {:ok, JsonParser.encode(map, filename)}
   defp encode({:error, _} = error, _), do: error
 
-  defp format({:ok, list}), do: {:ok, Formatter.format(list)}
-  defp format({:error, _} = error), do: error
+  defp format_for_csv({:ok, list}) when is_list(list), do: {:ok, CsvFormatter.format(list)}
+  defp format_for_csv({:error, _} = error), do: error
+
+  defp format_for_json({:ok, list})when is_list(list), do: {:ok, JsonFormatter.format(list)}
+  defp format_for_json({:error, _} = error), do: error
 end
